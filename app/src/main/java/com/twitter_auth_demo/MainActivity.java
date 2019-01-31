@@ -1,10 +1,14 @@
 package com.twitter_auth_demo;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,6 +16,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
@@ -216,5 +221,32 @@ public class MainActivity extends AppCompatActivity {
         twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void logoutTwitter(View view) {
+        TwitterSession twitterSession = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        if (twitterSession != null) {
+            ClearCookies(getApplicationContext());
+            TwitterCore.getInstance().getSessionManager().clearActiveSession();
+            TextView textView =findViewById(R.id.user_details_label);
+            textView.setText("");
+            Picasso.with(MainActivity.this)
+                    .load(R.mipmap.ic_launcher_round)
+                    .placeholder(R.mipmap.ic_launcher_round)
+                    .into(userProfileImageView);
+        }
+    }
 
+    public static void ClearCookies(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        } else {
+            CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(context);
+            cookieSyncMngr.startSync();
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+            cookieManager.removeSessionCookie();
+            cookieSyncMngr.stopSync();
+            cookieSyncMngr.sync();
+        }
+    }
 }

@@ -48,5 +48,9 @@
         android:textColor="@color/colorPrimary"
         android:textSize="15sp" />
 
-
+<Button
+    android:layout_width="match_parent"
+     android:text="@string/logout"
+     android:onClick="logoutTwitter"
+    android:layout_height="wrap_content" />
 </LinearLayout>
